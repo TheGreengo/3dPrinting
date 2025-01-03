@@ -1,7 +1,6 @@
 use <../common.scad>
-use <rpz2w_no_cut.scad> 
 
-$fn = 64;
+$fn = 12;
 eps = 0.5;
 tol = 0.1;
 nof = 0.001;
@@ -34,48 +33,105 @@ top_h   = 2*(case_h/3);          //
 
 bot_of_top = 35 + rpz_ho + tol + case_t + rpz_hr + 1;
 top_of_bot = 35 + rpz_w + case_t - rpz_ho - rpz_hr - 1;
-hole_right = case_t + rpz_ho + rpz_hr + 1;
-hole_left  = 0;
+hole_right = case_t + rpz_ho + rpz_hr + 2;
+hole_left  = rpz_l - case_t - rpz_hr - rpz_ho;
 
-module hexadron(tall, height) {
-    wide   = tall / tan(60);
-    radius = sqrt((tall ^ 2) + (wide ^ 2));
-    linear_extrude(height) {
-        polygon(
-            [[tall, 0], [2 * tall, wide], [2 * tall, wide + radius],
-            [tall, (2 * wide) + radius], [0, wide + radius],[0, wide]]
-        );
-    }
-}
-
-module hex_tile(tall, height, width) {
-    // we want 
-    // opp / adj = tan(60)
-    // 2x^2 = 1
-    del = width * tan(50);
-    echo(tan(50));
+module wall(thck, in_rad, hght, lngth, wdth) {
+    doub = thck * 2;
     difference() {
-        hexadron(tall, height);
-        translate([width, del, -nof])
-        hexadron(tall-width, height + (2 * nof));
+        bottom_rrect(in_rad + thck, lngth + doub, wdth + doub, hght,1);
+        translate([thck, thck, -(eps / 2)+1.25])
+        rrect(in_rad, lngth, wdth, hght + 1 + eps);
     }
 }
 
-module protected() {
+// Parameters:
+module case_btm_pos(
+                br=rpz_cr, bl=rpz_l, bw=rpz_w, 
+                bh=case_t, hr=rpz_hr, ho=rpz_ho, 
+                pr=case_pr, ph=case_ph, ch=case_h
+            ) {
+    translate([bh, bh, 0]) {
+        // adding the pins through pins
+        for (i = [0 + ho + tol, bw - ho - tol]) {
+            for (j = [0 + ho + tol, bl - ho - tol]) {
+                translate([i, j, bh])
+                cylinder(ph+top_h-bh + tol, pr, pr);
+            }
+        }
+    }
+    
+    wall(bh, br, ch, bl, bw);
 }
 
-//color("red")
-//translate([bot_of_top, case_t, 0])
-//cube([top_of_bot -  bot_of_top, hole_right - case_t, 2]);
-//color("purple")
-//translate([bot_of_top, hole_right, 0])
-//cube([top_of_bot -  bot_of_top, hole_right - case_t, 2]);
+// Parameters: 
+module case_btm_neg(
+                co=case_co, cl=case_cl,cd=case_cd, 
+                bh=case_t, ch=case_h
+            ) {
+    translate([pci_o + bh, rpz_l, bh + nof])
+    cube([pci_l,10,10]);
+    translate([sd_o + bh, -eps, bh + nof])
+    cube([sd_w,10,10]);
+    translate([5,hdmi_o + bh,bh + nof])
+    cube([rpz_w,hdmi_w,5]);
+    translate([5,usb1_o + bh,bh + nof])
+    cube([rpz_w,usb_w,5]);
+    translate([5,usb2_o + bh,bh + nof])
+    cube([rpz_w,usb_w,5]);
+}
+
+module case_btm() {
+    difference() {
+        case_btm_pos();
+        case_btm_neg();
+    }
+}
+
+module case_top() {
+    basis = case_t + rpz_l;
+    difference() {
+        wall(case_t, rpz_cr, top_h, rpz_l, rpz_w);
+        translate([case_t, case_t, 0]) {
+            // adding the pins through pins
+            for (i = [rpz_ho+tol,rpz_w-rpz_ho-tol]) {
+                for (j = [rpz_ho+tol,rpz_l-rpz_ho-tol]) {
+                    translate([i, j, -nof])
+                    cylinder(case_ph, case_pr+0.1, case_pr+0.1);
+                }
+            }
+        }
+        translate([5,basis - hdmi_o - hdmi_w,case_t + nof])
+        cube([rpz_w,hdmi_w,5]);
+        translate([5,basis - usb1_o - usb_w,case_t + nof])
+        cube([rpz_w,usb_w,5]);
+        translate([5,basis - usb2_o - usb_w,case_t + nof])
+        cube([rpz_w,usb_w,5]);
+    }
+}
+
+
+module hexy() {
+//    color("red")
+//    translate([bot_of_top, case_t, 0])
+//    cube([top_of_bot -  bot_of_top, hole_right - case_t, 2]);
+    difference() {
+        cube([rpz_w, hole_left - hole_right, 1+nof+nof]);
+        hex_mat(10,16,1,2,1);
+    }
+}
 
 //color("#44ff5a")
-//case_btm();
+difference(){
+    case_btm();
+    translate([case_t, hole_right, -nof])
+    hexy();
+}
 
 //color("greenyellow")
-//translate([35, 0, 0])
-//case_top();
-
-hex_tile(5, 2.5, 1);
+difference() {
+    translate([35, 0, 0])
+    case_top();
+    translate([case_t + 35, hole_right, -nof])
+    hexy();
+}

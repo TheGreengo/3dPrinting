@@ -1,4 +1,5 @@
 $fn=50;
+nof = 0.001;
 
 module donut(inner_radius, body_radius) {
     rotate_extrude(convexity=10)
@@ -89,4 +90,58 @@ module full_rrect(radius, length, width, height) {
     }
 }
 
-bottom_rrect(3, 36, 24, 2, 1);
+function hex_wid(x) = x / tan(60);
+
+function hex_rad(x) = sqrt((x ^ 2) + (hex_wid(x) ^ 2));
+
+function hex_ful(x) = (2 * hex_wid(x)) + hex_rad(x);
+
+function hex_dim(x) = [hex_wid(x), hex_rad(x), hex_ful(x)];
+
+module hexadron(tall, height) {
+    wide   = hex_wid(tall);
+    radius = hex_rad(tall);
+    linear_extrude(height) {
+        polygon(
+            [[tall, 0], [2 * tall, wide], [2 * tall, wide + radius],
+            [tall, (2 * wide) + radius], [0, wide + radius],[0, wide]]
+        );
+    }
+}
+
+module hex_tile(tall, height, thick) {
+    // A whole bunch of trig garbage, there's probably a better way
+    ntall  = tall - thick;
+    ndims  = hex_dim(ntall);
+    dims   = hex_dim(tall);
+    wide   = hex_wid(tall);
+    radius = hex_rad(tall);
+    del    = (dims[2] - ndims[2]) / 2;
+    
+    difference() {
+        hexadron(tall, height);
+        translate([thick, del, -nof])
+        hexadron(ntall, height + (2 * nof));
+    }
+}
+
+module hex_mat(rows, cols, thick, tall, height) {
+    int_h  = sqrt(thick^2 - (thick / 2)^2);
+    ntall  = tall - thick;
+    dims   = hex_dim(tall);
+    ndims  = hex_dim(ntall);
+    off    = dims[2] - thick;
+    ftall  = 2 * tall;
+    xoff   = ftall - thick;
+    del    = (dims[2] - ndims[2]) / 2;
+    h1     = ndims[0] + del - int_h;
+    h2     = del;
+    yoff   = dims[2] - h1 - h2;
+    
+    for (i = [0:cols], j = [0:rows]) {
+        odd = (j % 2) * (tall - (thick / 2));
+        rotate([0,0,90])
+        translate([(xoff * i) + odd, -dims[2] - (j * yoff), 0])
+        hex_tile(tall, height, thick);
+    }
+}
