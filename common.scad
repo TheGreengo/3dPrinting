@@ -125,18 +125,23 @@ module hex_tile(tall, height, thick) {
     }
 }
 
+function hex_row_int_h(thick)      = sqrt(thick^2 - (thick / 2)^2);
+function hex_row_h1(tall, ntall)   = (hex_ful(tall) - hex_ful(ntall)) / 2;
+function hex_row_h2(tall, ntall)   = hex_wid(ntall) + 
+                                     hex_row_h1(tall, ntall) -
+                                     hex_row_int_h(ntall - tall);
+function hex_row_yoff(tall, ntall) = hex_ful(tall) - 
+                                     hex_row_h1(tall, ntall) - 
+                                     hex_row_h2(tall, ntall);
+                                     
 module hex_mat(rows, cols, thick, tall, height) {
-    int_h  = sqrt(thick^2 - (thick / 2)^2);
     ntall  = tall - thick;
     dims   = hex_dim(tall);
     ndims  = hex_dim(ntall);
     off    = dims[2] - thick;
     ftall  = 2 * tall;
     xoff   = ftall - thick;
-    del    = (dims[2] - ndims[2]) / 2;
-    h1     = ndims[0] + del - int_h;
-    h2     = del;
-    yoff   = dims[2] - h1 - h2;
+    yoff   = hex_row_yoff(tall, ntall);
     
     for (i = [0:cols], j = [0:rows]) {
         odd = (j % 2) * (tall - (thick / 2));
@@ -145,3 +150,21 @@ module hex_mat(rows, cols, thick, tall, height) {
         hex_tile(tall, height, thick);
     }
 }
+
+module hex_diff(rows, cols, thick, tall, height) {
+    ntall  = tall - thick;
+    dims   = hex_dim(tall);
+    ndims  = hex_dim(ntall);
+    ftall  = 2 * tall;
+    xoff   = ftall - thick;
+    yoff   = hex_row_yoff(tall, ntall);
+    
+    for (i = [0:(cols-1)], j = [0:(rows-1)]) {
+        odd = (j % 2) * (tall - (thick / 2));
+        rotate([0,0,90])
+        translate([(xoff * i) + odd, -ndims[2] -(j * yoff), 0])
+        hexadron(tall - thick, height);
+    }
+}
+
+hex_diff(10, 6, 1, 3, 1);

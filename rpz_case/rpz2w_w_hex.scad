@@ -110,28 +110,33 @@ module case_top() {
     }
 }
 
-
-module hexy() {
-//    color("red")
-//    translate([bot_of_top, case_t, 0])
-//    cube([top_of_bot -  bot_of_top, hole_right - case_t, 2]);
-    difference() {
-        cube([rpz_w, hole_left - hole_right, 1+nof+nof]);
-        hex_mat(10,16,1,2,1);
-    }
-}
-
+hex_ta = 2.09;
+hex_th = 1;
+dumb   = (hex_ta - hex_th) * 2;
+mid_rows = 11;
+mid_cols = 16;
+l_rows = 7;
+l_cols = 2;
+dims = hex_dim(hex_ta);
+ndims = hex_dim(hex_ta+hex_th);
+l_off = hole_right - (2 * dumb) - (2 * hex_th);
+r_off = hole_right + (mid_cols * (dumb + hex_th));
+f_off = hex_row_yoff(hex_ta + hex_th, hex_ta) + (2 * case_t);
 //color("#44ff5a")
 difference(){
     case_btm();
     translate([case_t, hole_right, -nof])
-    hexy();
+    hex_diff(mid_rows,mid_cols,hex_th,hex_ta,2);
+    translate([f_off, l_off, -nof])
+    hex_diff(l_rows,l_cols,hex_th,hex_ta,2);
+    translate([f_off, r_off, -nof])
+    hex_diff(l_rows,l_cols,hex_th,hex_ta,2);
 }
 
 //color("greenyellow")
-difference() {
-    translate([35, 0, 0])
-    case_top();
-    translate([case_t + 35, hole_right, -nof])
-    hexy();
-}
+//difference() {
+//    translate([35, 0, 0])
+//    case_top();
+//    translate([case_t + 35, hole_right, -nof])
+//    hex_diff(10,15,1,2.09,2);
+//}
