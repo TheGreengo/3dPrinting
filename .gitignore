@@ -1,2 +1,5 @@
 *.stl
+*.png
 *.3mf
+*.DS_Store
+rpz_case/images/
