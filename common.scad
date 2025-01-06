@@ -125,6 +125,7 @@ module hex_tile(tall, height, thick) {
     }
 }
 
+function hex_row_xoff(tall, thick) = (2 * tall) - thick;
 function hex_row_int_h(thick)      = sqrt(thick^2 - (thick / 2)^2);
 function hex_row_h1(tall, ntall)   = (hex_ful(tall) - hex_ful(ntall)) / 2;
 function hex_row_h2(tall, ntall)   = hex_wid(ntall) + 
@@ -138,9 +139,7 @@ module hex_mat(rows, cols, thick, tall, height) {
     ntall  = tall - thick;
     dims   = hex_dim(tall);
     ndims  = hex_dim(ntall);
-    off    = dims[2] - thick;
-    ftall  = 2 * tall;
-    xoff   = ftall - thick;
+    xoff   = hex_row_xoff(tall, thick);
     yoff   = hex_row_yoff(tall, ntall);
     
     for (i = [0:cols], j = [0:rows]) {
@@ -151,20 +150,26 @@ module hex_mat(rows, cols, thick, tall, height) {
     }
 }
 
-module hex_diff(rows, cols, thick, tall, height) {
+// ok, I want to make it so 
+module hex_diff(rows, cols, thick, tall, height, oddf=false, eh=false) {
     ntall  = tall - thick;
     dims   = hex_dim(tall);
     ndims  = hex_dim(ntall);
-    ftall  = 2 * tall;
-    xoff   = ftall - thick;
+    xoff   = hex_row_xoff(tall, thick);
     yoff   = hex_row_yoff(tall, ntall);
+    oddadj = oddf ? 1 : 0;
     
     for (i = [0:(cols-1)], j = [0:(rows-1)]) {
-        odd = (j % 2) * (tall - (thick / 2));
+        odd = ((j + oddadj) % 2) * (tall - (thick / 2));
         rotate([0,0,90])
         translate([(xoff * i) + odd, -ndims[2] -(j * yoff), 0])
         hexadron(tall - thick, height);
     }
+    
+    if (eh) {
+        for (i = [0:rows]) {
+            if ((i + oddadj) % 2 == 0) {
+            }
+        }
+    }
 }
-
-hex_diff(10, 6, 1, 3, 1);

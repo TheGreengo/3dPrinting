@@ -1,7 +1,7 @@
 use <../common.scad>
 use <rpz2w_no_cut.scad>
 
-$fn = 12;
+$fn = 64;
 eps = 0.5;
 tol = 0.1;
 nof = 0.001;
@@ -72,10 +72,4 @@ module neg_hexes() {
 difference(){
     case_btm();
     neg_hexes();
-}
-
-//color("greenyellow")
-translate([35, 0, 0])
-difference() {
-    case_top();
 }

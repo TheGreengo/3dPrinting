@@ -1,7 +1,7 @@
 use <../common.scad>
-use <rpz2w_no_cut.scad>
+use <rpz2w_case.scad>
 
-$fn = 12;
+$fn = 64;
 eps = 0.5;
 tol = 0.1;
 nof = 0.001;
@@ -29,39 +29,33 @@ hole_left  = rpz_l - case_t - rpz_hr - rpz_ho;
 hex_ta = 2.09;
 hex_th = 1;
 dumb   = (hex_ta - hex_th) * 2;
-mid_rows = 11;
+mid_rows = 8;
 mid_cols = 16;
-l_rows = 7;
+l_rows = 6;
 l_cols = 2;
 dims = hex_dim(dumb);
 ndims = hex_dim(hex_ta+hex_th);
 odims = hex_dim(hex_ta-hex_th);
 l_off = hole_right - (2 * dumb) - (2 * hex_th);
 r_off = hole_right + (mid_cols * (dumb + hex_th));
-f_off = hex_row_yoff(hex_ta + hex_th, hex_ta) + (2 * case_t);
+f_off = hex_row_yoff(hex_ta + hex_th, hex_ta) + (2 * case_t) - 1;
 bad_1 = -odims[2] - case_t - hex_row_yoff(hex_ta, hex_ta - hex_th);
 bad_2 = hole_right - (hex_row_xoff(hex_ta, hex_th) / 2);
-bad_3 = bad_1 - (8 * hex_row_yoff(hex_ta, hex_ta - hex_th));
-bad_4 = hole_right + (16 * hex_row_xoff(hex_ta, hex_th));
-bad_5 = -case_t - odims[2];
+bad_3 = bad_1 - (8 * hex_row_yoff(hex_ta, hex_ta - hex_th)) + 1;
+bad_4 = hole_right + (17 * hex_row_xoff(hex_ta, hex_th));
+bad_5 = -case_t - odims[2] - (2 * hex_row_yoff(hex_ta, hex_ta - hex_th));
 bad_6 = hole_right + (16 * hex_row_xoff(hex_ta, hex_th));
-bad_7 = -case_t - odims[2] - (10 * hex_row_yoff(hex_ta, hex_ta - hex_th));
+bad_7 = -case_t - odims[2] - (10 * hex_row_yoff(hex_ta, hex_ta - hex_th)) + 1;
 
 module neg_hexes() {
-    translate([case_t, hole_right, -nof])
-    hex_diff(mid_rows,mid_cols,hex_th,hex_ta,2);
-    translate([f_off, l_off, -nof])
-    hex_diff(l_rows,l_cols,hex_th,hex_ta,2);
-    translate([f_off, r_off, -nof])
-    hex_diff(l_rows,l_cols,hex_th,hex_ta,2);
-    rotate([0,0,90])
-    translate([bad_2, bad_1, -nof])
-    hexadron(dumb/2, 2);
+    translate([f_off+hex_row_yoff(hex_ta, hex_ta - hex_th), hole_right, -nof])
+    hex_diff(mid_rows,mid_cols,hex_th,hex_ta,2,true);
+    translate([f_off+hex_row_yoff(hex_ta, hex_ta - hex_th), l_off, -nof])
+    hex_diff(l_rows,l_cols,hex_th,hex_ta,2, true);
+    translate([f_off+hex_row_yoff(hex_ta, hex_ta - hex_th), r_off, -nof])
+    hex_diff(l_rows,l_cols,hex_th,hex_ta,2,true);
     rotate([0,0,90])
     translate([bad_2, bad_3, -nof])
-    hexadron(dumb/2, 2);
-    rotate([0,0,90])
-    translate([bad_4, bad_5, -nof])
     hexadron(dumb/2, 2);
     rotate([0,0,90])
     translate([bad_6, bad_7, -nof])
@@ -72,10 +66,4 @@ module neg_hexes() {
 difference(){
     case_btm();
     neg_hexes();
-}
-
-//color("greenyellow")
-translate([35, 0, 0])
-difference() {
-    case_top();
 }

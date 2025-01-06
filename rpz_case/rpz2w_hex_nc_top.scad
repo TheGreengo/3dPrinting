@@ -1,7 +1,7 @@
 use <../common.scad>
 use <rpz2w_no_cut.scad>
 
-$fn = 12;
+$fn = 64;
 eps = 0.5;
 tol = 0.1;
 nof = 0.001;
@@ -54,12 +54,12 @@ module neg_hexes() {
     hex_diff(l_rows,l_cols,hex_th,hex_ta,2);
     translate([f_off, r_off, -nof])
     hex_diff(l_rows,l_cols,hex_th,hex_ta,2);
-    rotate([0,0,90])
-    translate([bad_2, bad_1, -nof])
-    hexadron(dumb/2, 2);
-    rotate([0,0,90])
-    translate([bad_2, bad_3, -nof])
-    hexadron(dumb/2, 2);
+    //rotate([0,0,90])
+    //translate([bad_2, bad_1, -nof])
+    //hexadron(dumb/2, 2);
+    //rotate([0,0,90])
+    //translate([bad_2, bad_3, -nof])
+    //hexadron(dumb/2, 2);
     rotate([0,0,90])
     translate([bad_4, bad_5, -nof])
     hexadron(dumb/2, 2);
@@ -68,14 +68,8 @@ module neg_hexes() {
     hexadron(dumb/2, 2);
 }
 
-//color("#44ff5a")
-difference(){
-    case_btm();
-    neg_hexes();
-}
-
 //color("greenyellow")
-translate([35, 0, 0])
 difference() {
     case_top();
+    neg_hexes();
 }
