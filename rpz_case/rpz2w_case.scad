@@ -165,7 +165,6 @@ module case_btm() {
         case_btm_neg();
     }
 }
-
 // (2 * case_t) + rpz_l
 module case_top() {
     basis = case_t + rpz_l;
@@ -191,14 +190,34 @@ module case_top() {
     }
 }
 
+// (2 * case_t) + rpz_l
+module case_top_snug() {
+    basis = case_t + rpz_l;
+    difference() {
+        wall(case_t, rpz_cr, top_h, rpz_l, rpz_w);
+        translate([-eps, basis-case_co-case_cl,-(eps/2)])
+        cube([case_cd + eps, case_cl, case_h+1 + eps]);
+        translate([case_t, case_t, 0]) {
+            // adding the pins through pins
+            for (i = [rpz_ho+tol,rpz_w-rpz_ho-tol]) {
+                for (j = [rpz_ho+tol,rpz_l-rpz_ho-tol]) {
+                    translate([i, j, -nof])
+                    cylinder(case_ph, case_pr+0.05, case_pr+0.05);
+                }
+            }
+        }
+        translate([5,basis - hdmi_o - hdmi_w,case_t + nof])
+        cube([rpz_w,hdmi_w,5]);
+        translate([5,basis - usb1_o - usb_w,case_t + nof])
+        cube([rpz_w,usb_w,5]);
+        translate([5,basis - usb2_o - usb_w,case_t + nof])
+        cube([rpz_w,usb_w,5]);
+    }
+}
+
 color("#44ff5a")
 case_btm();
 color("green")
 translate([35, 0, 0])
-case_top();
+case_top_snug();
          
-// TODO: filleted edges for cutouts
-// TODO: make top case part
-// TODO: make click together thing
-// TODO: make bambu studio profile
-// TODO: upload to makerworld.com

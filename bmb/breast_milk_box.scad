@@ -4,7 +4,6 @@ widt = 108;
 
 echo((176 - 2) / (dept + 2));
 
-
 module bottom() {
     difference() {
         cube([112,170,80]);
@@ -67,5 +66,3 @@ module fridge_box() {
         tring(65, 160);
     }
 }
-
-mold();

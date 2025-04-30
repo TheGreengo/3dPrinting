@@ -39,6 +39,7 @@ module donut(inner_radius, body_radius) {
 }
 
 // cuboid with chamfored edges on the bottom
+// bottom_rrect(in_rad + thck, lngth + doub, wdth + doub, hght,1);
 module bottom_rrect(radius, width, length, height, bradius) {
     // Vertical columns
     for (i = [radius, length - radius]) {
@@ -176,8 +177,8 @@ module case_top() {
     }
 }
 
-color("#44ff5a")
-case_btm();
-color("green")
-translate([35, 0, 0])
-case_top();
+//color("#44ff5a")
+//case_btm();
+//color("green")
+//translate([35, 0, 0])
+//case_top();
