@@ -17,8 +17,8 @@ case_h  = 4.5;                   // case height
 top_h   = 2 * (case_h / 3);      //
 cam_xo  = 5.6;
 cam_yo  = 32.5;
-cam_pr  = 1.1;
-cam_ph  = 5.0;
+cam_pr  = 1.125;
+cam_ph  = 8.0; //5.0
 cam_xd  = 21.0;
 cam_yd  = 12.5;
 
@@ -40,5 +40,9 @@ for (i=[cam_xo, cam_xo + cam_xd]) {
     for (j=[cam_yo, cam_yo + cam_yd]) {
         translate([i, j, top_h - nof])
         cylinder(h=cam_ph, r=cam_pr);
+    }
+    for (j=[cam_yo, cam_yo + cam_yd]) {
+        translate([i, j, top_h - nof])
+        cylinder(h=4.0, r=cam_pr+1);
     }
 }
