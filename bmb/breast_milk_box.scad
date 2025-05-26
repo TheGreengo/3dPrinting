@@ -66,3 +66,6 @@ module fridge_box() {
         tring(65, 160);
     }
 }
+
+//bottom();
+fridge_box();

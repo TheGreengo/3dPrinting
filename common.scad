@@ -135,6 +135,23 @@ function hex_row_yoff(tall, ntall) = hex_ful(tall) -
                                      hex_row_h1(tall, ntall) - 
                                      hex_row_h2(tall, ntall);
                                      
+module hex_mat_on(rows, cols, thick, tall, height) {
+    ntall  = tall - thick;
+    dims   = hex_dim(tall);
+    ndims  = hex_dim(ntall);
+    xoff   = hex_row_xoff(tall, thick);
+    yoff   = hex_row_yoff(tall, ntall);
+    del    = (dims[2] - ndims[2]) / 2;
+    
+    for (i = [0:cols], j = [0:rows]) {
+        odd = (j % 2) * (tall - (thick / 2));
+        rotate([0,0,90])
+        translate([(xoff * i) + odd, -dims[2] - (j * yoff), 0])
+        translate([thick, del, -nof])
+        hexadron(ntall, height + (2 * nof));
+    }
+}             
+                        
 module hex_mat(rows, cols, thick, tall, height) {
     ntall  = tall - thick;
     dims   = hex_dim(tall);
